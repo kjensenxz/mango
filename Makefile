@@ -4,7 +4,7 @@ PREFIX = /usr/local/
 
 CC = gcc
 
-VERSION = v2.1.6
+VERSION = v3.0.0
 
 CFLAGS = --std=c11 -Wall -Werror -DVERSION=\"$(VERSION)\" -O2 -Wpedantic
 LDFLAGS = 

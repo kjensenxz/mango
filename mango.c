@@ -26,7 +26,7 @@
 #include "libmango.h"
 
 #ifndef VERSION
-#define VERSION "2.0, not built with make"
+#define VERSION "3.0, not built with make"
 #endif
 
 // 'sys' functions -- shell/main setup for API calling
@@ -40,7 +40,7 @@ main (int argc, char **argv) {
 	unsigned char rflag = 0;
 	const char *msg = NULL;
 	
-        parseopts(argc, argv, &rflag);
+	parseopts(argc, argv, &rflag);
 
 	msg = argvtostr(argc, argv);
 
@@ -50,88 +50,88 @@ main (int argc, char **argv) {
 	
 	switch(rflag) {
 		case 1:
-			mangor(msg);
+			printf("%s", mangor(msg));
 			break;
 		case 0:
 		default:
-			mango(msg);
+			printf("%s", mango(msg));
 			break;
 	}
 
-        return EXIT_SUCCESS;
+	return EXIT_SUCCESS;
 }
 
 static void 
 parseopts(int argc, char **argv, unsigned char *rflag) {
-        int c = 0;
+	int c = 0;
 
-        while ((c = getopt(argc, argv, "vrh?")) != -1) {
-                switch (c) {
+	while ((c = getopt(argc, argv, "vrh?")) != -1) {
+		switch (c) {
 			case 'v':
 				version();
 				break;
-                        case 'r':
-                                *rflag = 1;
-                                break;
-                        case 'h':
-                        case '?':
-                        default :
-                                usage(argc, argv);
-                                break;
-                }
-        }
+			case 'r':
+				*rflag = 1;
+				break;
+			case 'h':
+			case '?':
+			default :
+				usage(argc, argv);
+				break;
+		}
+	} 
 
 	return;
 }
 
 static const char *
 argvtostr (int argc, char **argv) {
-        int i = 0, j = 0, k = 0;
-        int ct = argc - 1; // null pointer
-        char *msg = NULL;
+	int i = 0, j = 0, k = 0;
+	int ct = argc - 1; // null pointer
+	char *msg = NULL;
 
-        // find length of argv
-        for (i = 1; i < argc; ++i) {
+	// find length of argv
+	for (i = 1; i < argc; ++i) {
 		if (argv[i][0] == '-') {
 			continue;
 		}
-                for (j = 0; j < strlen(argv[i]); ++j) {
-                        ct++; // characters
-                }
-        }
+		for (j = 0; j < strlen(argv[i]); ++j) {
+			ct++; // characters
+		}
+	}
 
-        msg = calloc(sizeof(char *), ct);
+	msg = calloc(sizeof(char *), ct);
 	
 	// load up msg with argv and spaces in between
-        for (i = 1, k = 0; i < argc; ++i) {
+	for (i = 1, k = 0; i < argc; ++i) {
 		if (argv[i][0] == '-') {
 			continue;
 		}
-                for (j = 0; j < strlen(argv[i]); ++j, k++) {
-                        msg[k] = argv[i][j]; 
-                }
-                msg[k++] = ' ';
-        }
+		for (j = 0; j < strlen(argv[i]); ++j, k++) {
+			msg[k] = argv[i][j]; 
+		}
+		msg[k++] = ' ';
+	}
 	msg[k-1] = '\0'; // otherwise we'll get a blank line at the end
 
 	if (strlen(msg) < 1) {
 		return NULL;
 	}
 
-        return (const char*) msg;
+	return (const char*) msg;
 }
 
 
 noreturn static void
 usage(int argc, char **argv) {
-        fprintf(stderr,
-                "Usage: %s [your message with as many spaces as you want]\r\n"
-                "Mango your text!\r\n"
-                "\t -h, -?: This message!\r\n"
-                "\t     -v: Version & license information\r\n"
-                "\t     -r: Reverse mango!\r\n",
-                argv[0]);
-        exit(EXIT_SUCCESS);
+	fprintf(stderr,
+		"Usage: %s [your message with as many spaces as you want]\r\n"
+		"Mango your text!\r\n"
+		"\t -h, -?: This message!\r\n"
+		"\t     -v: Version & license information\r\n"
+		"\t     -r: Reverse mango!\r\n",
+		argv[0]);
+	exit(EXIT_SUCCESS);
 }
 
 noreturn static void

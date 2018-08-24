@@ -22,93 +22,84 @@
 #include <unistd.h>
 #include <string.h>
 
-// regular mango
-static void mangoh(const char *);
-static void mangov(const char *);
+#define FORWARD 0
+#define REVERSE 1
 
-// wrapper for reverse mango
-static void mangorv(const char *);
-static void mangorh(const char *);
+const char *mangoh(const char *, int);
+const char *mangov(const char *, int);
 
-void
-mango (const char *str) {
-	if (str == NULL) {
-		fprintf(stderr, "Error: mango called with null pointer\r\n"
-				"Terminating with EXIT_FAILURE\r\n");
-		exit(EXIT_FAILURE);
-		return;
-	}
+// consolidated regular/backwards mango
+const char *_mango(const char *, int);
 
-	mangoh(str);
-	mangov(str);
-
-	return;
+inline const char *
+mango(const char *str) {
+	return _mango(str, FORWARD);
 }
 
-void
-mangor (const char *str) {
-	if (str == NULL) {
-		fprintf(stderr, "Error: mango called with null pointer\r\n"
-				"Terminating with EXIT_FAILURE\r\n");
-		exit(EXIT_FAILURE);
-		return;
-	}
-
-	mangorh(str);
-	mangorv(str);
-
-	return;
+inline const char *
+mangor(const char *str) {
+	return _mango(str, REVERSE);
 }
 
-// mangoh(const char *): adds a space after every character, prints it
-static void
-mangoh (const char *str) {
+// _mango(str, FORWARD or REVERSE) -> forward or reverse mango
+const char *
+_mango (const char *str, int reverse) {
+	if (str == NULL) {
+		return NULL;
+	}
+	const char *horiz, *vert;
+	int len = strlen(str);
+
+	if (reverse == 1) {
+		str = strrev(str);
+		horiz = mangoh(str, len);
+		vert = mangov(str, len);
+	}
+	else {
+		horiz = mangoh(str, len);
+		vert = mangov(str, len);
+	}
+
+	// two double-len strings, remove 1 null terminator
+	int msglen = len * 2 * 2 - 1; 
+	char *msg = calloc(sizeof(char *), msglen);
+
+	strncat(msg, horiz, len*2);
+	strncat(msg+len*2-1, vert, len*2);
+
+	return msg;
+}
+// mangoh adds a space after every character, newline at the end,
+// and returns it
+const char *
+mangoh (const char *str, int len) {
+	int buflen = len * 2;
 	unsigned int i = 0;
 
-	int buflen = (strlen(str) * 2) - 1;
-	char *msgsp = calloc(sizeof(char *), buflen);
+	char *msg = calloc(sizeof(char *), buflen);
 
 	for (i = 0; i < buflen; i += 2) {
-		msgsp[i] = str[i/2];
-		msgsp[1+i] = ' ';
+		msg[i] = str[i/2];
+		msg[1+i] = ' ';
 	}
 
-	printf("%s\r\n", msgsp);
+	msg[i-1] = '\n';
+	// msg[i] is already 0
 
-	free(msgsp);
-
-	return;
+	return msg;
 }
 
-static void
-mangov (const char *str) {
+const char *
+mangov (const char *str, int len) {
+	int buflen = len * 2;
 	unsigned int i = 0;
+	
+	char *msg = calloc(sizeof(char *), buflen);
 
-	for (i = 1; i < strlen(str); ++i) {
-		printf("%c\r\n", i[str]);
+	for (i = 2; i < buflen; i += 2) {
+		msg[i-2] = str[i/2];
+		msg[i-1] = '\n';
 	}
 
-	return;
-}
-
-static void
-mangorv(const char *str) {
-	const char *rstr = NULL;
-
-	rstr = strrev(str);
-
-	mangov(rstr);
-
-	return;
-}
-
-static void
-mangorh(const char *str) {
-	const char *rstr = NULL;
-
-	rstr = strrev(str);
-
-	mangoh(rstr);
-
-	return;
+	return msg;
 }
